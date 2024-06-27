@@ -30,8 +30,9 @@ RUN mkdir -p /home/$user/.composer && \
 
 RUN mkdir -p storage/public/usersAvatar && chmod -R gu+w storage/public/usersAvatar && \
     chmod -R gu+w storage && \
-    mkdir -p storage/logs && chmod -R gu+w storage/logs
-    
+    mkdir -p storage/logs && chmod -R gu+w storage/logs && \
+    mkdir -p storage/framework/sessions && chmod -R gu+w storage/framework/sessions
+
 # Install redis
 RUN pecl install -o -f redis \
     &&  rm -rf /tmp/pear \
