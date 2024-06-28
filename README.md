@@ -38,6 +38,7 @@
 ```bash
     composer install
     php artisan key:generate
+    npm i
 ```
 
 ##### Ou
@@ -45,6 +46,7 @@
 ```bash
     docker-compose exec --user root app composer install
     docker-compose exec --user root app php artisan key:generate
+    docker-compose exec --user root app npm i
 ```
 
 
