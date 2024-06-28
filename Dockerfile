@@ -1,10 +1,11 @@
+# Use a imagem base do PHP 8.3 com FPM
 FROM php:8.3-fpm
 
-# set your user name, ex: user=carlos
+# Defina argumentos de construção para o nome de usuário e UID
 ARG user=todoList
 ARG uid=1000
 
-# Install system dependencies
+# Instale as dependências do sistema e Node.js, npm
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -12,36 +13,41 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
 
-# Clear cache
+# Limpe o cache do apt
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
+# Instale as extensões do PHP necessárias
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd sockets
 
-# Get latest Composer
+# Obtenha o Composer mais recente
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Create system user to run Composer and Artisan Commands
+# Crie um usuário do sistema para rodar o Composer e comandos do Artisan
 RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
-RUN mkdir -p storage/public/usersAvatar && chmod -R gu+w storage/public/usersAvatar && \
-    chmod -R gu+w storage && \
-    mkdir -p storage/logs && chmod -R gu+w storage/logs && \
-    mkdir -p storage/framework/sessions && chmod -R gu+w storage/framework/sessions
+# Crie diretórios necessários e ajuste as permissões
+RUN mkdir -p /var/www/storage/public/usersAvatar && chmod -R gu+w /var/www/storage/public/usersAvatar && \
+    chmod -R gu+w /var/www/storage && \
+    mkdir -p /var/www/storage/logs && chmod -R gu+w /var/www/storage/logs && \
+    mkdir -p /var/www/storage/framework/sessions && chmod -R gu+w /var/www/storage/framework/sessions && \
+    mkdir -p /var/www/node_modules && chmod -R gu+w /var/www/node_modules
 
-# Install redis
+# Instale e habilite a extensão redis
 RUN pecl install -o -f redis \
     &&  rm -rf /tmp/pear \
     &&  docker-php-ext-enable redis
 
-# Set working directory
+# Defina o diretório de trabalho
 WORKDIR /var/www
 
-# Copy custom configurations PHP
+# Copie configurações personalizadas do PHP
 COPY docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
 
+# Use o usuário definido para rodar o contêiner
 USER $user

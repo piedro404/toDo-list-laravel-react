@@ -1,7 +1,7 @@
 version: "3.7"
 
 services:
-  # image project
+  # Laravel App
   app:
     build:
       context: .
@@ -13,11 +13,13 @@ services:
       - ./storage:/var/www/storage
       - ./storage/public/usersAvatar:/var/www/storage/public/usersAvatar
     depends_on:
+      - db
       - redis
+      - npm
     networks:
       - laravel
 
-  # nginx
+  # Nginx
   nginx:
     image: nginx:alpine
     restart: unless-stopped
@@ -31,7 +33,21 @@ services:
     networks:
       - laravel
 
-  # db mysql
+  # Node.js (Vite)
+  npm:
+    image: node:latest
+    container_name: npm
+    restart: always
+    volumes:
+      - ./:/var/www
+    ports:
+      - "3000:3000"
+    working_dir: /var/www
+    command: ["npm", "run", "dev"]  # Comando para iniciar o Vite
+    networks:
+      - laravel
+
+  # MySQL
   db:
     image: mysql:5.7.22
     restart: unless-stopped
@@ -60,9 +76,10 @@ services:
     networks:
       - laravel
 
-  # redis
+  # Redis
   redis:
     image: redis:latest
+    restart: unless-stopped
     networks:
       - laravel
 
