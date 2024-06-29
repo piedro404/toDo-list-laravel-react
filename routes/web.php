@@ -38,6 +38,8 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->prefix('tasks')->group(function () {
     Route::get('/', [TaskController::class, 'index'])->name('task.index');
+    Route::get('/create', [TaskController::class, 'create'])->name('task.create');
+    Route::post('/', [TaskController::class, 'store'])->name('task.store');
 });
 
 require __DIR__.'/auth.php';

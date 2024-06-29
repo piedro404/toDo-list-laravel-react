@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TaskFormRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,15 +36,21 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render("Task/Create", ["url_store" => Route("task.store")]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(TaskFormRequest $request)
     {
-        //
+        // dd($request->all());
+        $auth = Auth::user();
+        $user = $this->user->find($auth->id);
+        $request['status'] = false;
+        $user->tasks()->create($request->all());
+
+        return redirect()->route("task.index")->with("success", true);
     }
 
     /**
