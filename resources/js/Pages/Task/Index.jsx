@@ -1,10 +1,17 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
+import { Head, usePage, router, useForm } from "@inertiajs/react";
+import { useState } from "react";
 
 export default function Index({ auth, tasks, flash }) {
+    const { delete: destroy } = useForm();
+
     console.log(auth);
     console.log(tasks);
     console.log(flash);
+
+    function submit(url) {
+        destroy(url);
+    }
 
     return (
         <AuthenticatedLayout
@@ -28,6 +35,20 @@ export default function Index({ auth, tasks, flash }) {
                                 <p>{task.title}</p>
                                 <p>{task.description}</p>
                                 <p>{task.term}</p>
+                                <a href={task.urls.url_edit}>
+                                    Editar
+                                </a>
+                                <br />
+                                <a href={task.urls.url_show}>
+                                    Visualizar
+                                </a>
+                                <br />
+                                <form onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submit(task.urls.url_delete);
+                                }}>
+                                    <button type="submit">Deletar</button>
+                                </form>
                             </div>
                         ))}
                     </div>

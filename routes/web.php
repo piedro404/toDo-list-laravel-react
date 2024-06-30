@@ -43,6 +43,7 @@ Route::middleware('auth')->prefix('tasks')->group(function () {
     Route::get('/show/{id}', [TaskController::class, 'show'])->name('task.show');
     Route::get('/edit/{id}', [TaskController::class, 'edit'])->name('task.edit');
     Route::put('/{id}', [TaskController::class, 'update'])->name('task.update');
+    Route::delete('/{id}', [TaskController::class, 'destroy'])->name('task.destroy');
 });
 
 require __DIR__.'/auth.php';

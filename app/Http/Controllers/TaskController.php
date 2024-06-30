@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TaskFormRequest;
 use App\Http\Resources\TaskResource;
+use App\Http\Resources\TaskResourceCollection;
 use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
@@ -27,8 +28,10 @@ class TaskController extends Controller
     {
         $auth = Auth::user();
         $user = $this->user->find($auth->id);
-        $tasks = TaskResource::collection($user->tasks()->get());
+        $tasks = new TaskResourceCollection($user->tasks()->get());
         // dd($tasks);
+
+    
         return Inertia::render("Task/Index", ['tasks' => $tasks]);
     }
 
@@ -37,7 +40,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return Inertia::render("Task/Create", ["url_store" => Route("task.store")]);
+        return Inertia::render("Task/Create", ["urls" => ["url_store" => Route("task.store")]]);
     }
 
     /**
@@ -51,7 +54,7 @@ class TaskController extends Controller
         $request['status'] = false;
         $user->tasks()->create($request->all());
 
-        return redirect()->route("task.index")->with("success", "Tarefa " . $request['title'] . " criada com Sucesso!");
+        return redirect()->route("task.index")->with("success", "Tarefa " . $request['title'] . " criada com sucesso!");
     }
 
     /**
@@ -67,7 +70,7 @@ class TaskController extends Controller
         }
         $task = new TaskResource($task);
         // dd($task);
-        return Inertia::render("Task/Show", ['task' => $task]);
+        return Inertia::render("Task/Show", ['task' => $task, "urls" => ['url_edit' => Route('task.edit', ['id' => $task->id]), 'url_delete' => Route('task.destroy', ['id' => $task->id])]]);
     }
 
     /**
@@ -83,7 +86,7 @@ class TaskController extends Controller
         }
         $task = new TaskResource($task);
         // dd($task);
-        return Inertia::render("Task/Edit", ['task' => $task, 'url_update' => Route('task.update', ['id' => $task->id])]);
+        return Inertia::render("Task/Edit", ['task' => $task, "urls" => ['url_update' => Route('task.update', ['id' => $task->id])]]);
     }
 
     /**
@@ -110,7 +113,7 @@ class TaskController extends Controller
 
         $task->update($request->all());
 
-        return redirect()->route("task.index")->with("success", "Tarefa " . $request['title'] . " criada com Sucesso!");
+        return redirect()->route("task.index")->with("success", "Tarefa " . $request['title'] . " atualizada com sucesso!");
     }
 
     /**
@@ -118,6 +121,16 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $auth = Auth::user();
+        $user = $this->user->find($auth->id);
+        $task = $user->tasks()->find($id);
+
+        if ($task == null) {
+            return redirect()->route("task.index")->with("error", "Tarefa não encontrada!");
+        }
+
+        $task->delete();
+
+        return redirect()->route("task.index")->with("success", "Tarefa " . $task['title'] . " excluida com sucesso!");
     }
 }

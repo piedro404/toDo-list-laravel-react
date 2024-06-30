@@ -2,7 +2,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, router, useForm } from "@inertiajs/react";
 import { useState } from "react";
 
-export default function Show({ auth, task, url_update }) {
+export default function Show({ auth, task, urls }) {
     const { data, setData, put, processing, errors } = useForm({
         title: task.data.title,
         description: task.data.description,
@@ -16,14 +16,14 @@ export default function Show({ auth, task, url_update }) {
 
     console.log(auth);
     console.log(task);
-    console.log(url_update);
+    console.log(urls);
     console.log(data);
     console.log(errors);
     // alert(errors.title);
 
     function submit(e) {
         e.preventDefault();
-        put(url_update);
+        put(urls.url_update);
     }
 
     return (
