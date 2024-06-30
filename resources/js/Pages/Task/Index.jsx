@@ -22,8 +22,9 @@ export default function Index({ auth, tasks, flash }) {
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">Tarefas</div>
 
-                        {tasks["data"].map((task) => (
+                        {tasks.data.map((task) => (
                             <div key={task.id}>
+                                <p>{task.id}</p>
                                 <p>{task.title}</p>
                                 <p>{task.description}</p>
                                 <p>{task.term}</p>

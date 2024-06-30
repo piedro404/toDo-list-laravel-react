@@ -6,6 +6,7 @@ use App\Http\Requests\TaskFormRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Inertia\Inertia;
@@ -61,8 +62,8 @@ class TaskController extends Controller
         $auth = Auth::user();
         $user = $this->user->find($auth->id);
         $task = $user->tasks()->find($id);
-        if($task == null) {
-            return redirect()->route("task.index")->with("error","Tarefa não encontrada!");
+        if ($task == null) {
+            return redirect()->route("task.index")->with("error", "Tarefa não encontrada!");
         }
         $task = new TaskResource($task);
         // dd($task);
@@ -74,15 +75,42 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $auth = Auth::user();
+        $user = $this->user->find($auth->id);
+        $task = $user->tasks()->find($id);
+        if ($task == null) {
+            return redirect()->route("task.index")->with("error", "Tarefa não encontrada!");
+        }
+        $task = new TaskResource($task);
+        // dd($task);
+        return Inertia::render("Task/Edit", ['task' => $task, 'url_update' => Route('task.update', ['id' => $task->id])]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(TaskFormRequest $request, string $id)
     {
-        //
+        $auth = Auth::user();
+        $user = $this->user->find($auth->id);
+        $task = $user->tasks()->find($id);
+
+        if ($task == null) {
+            return redirect()->route("task.index")->with("error", "Tarefa não encontrada!");
+        }
+
+        if ($request->status != $task->status) {
+            if ($request->status) {
+                $request['concluied_at'] = Carbon::now();
+            } else {
+                $request['concluied_at'] = null;
+            }
+        }
+        // dd($request->all(), $id);
+
+        $task->update($request->all());
+
+        return redirect()->route("task.index")->with("success", "Tarefa " . $request['title'] . " criada com Sucesso!");
     }
 
     /**

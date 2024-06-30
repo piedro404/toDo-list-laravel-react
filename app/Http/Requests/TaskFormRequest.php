@@ -42,6 +42,13 @@ class TaskFormRequest extends FormRequest
             ],
         ];
 
+        if ($this->method() === "PUT") {
+            $rules['status'] = [
+                'required',
+                'boolean',
+            ];
+        }
+
         return $rules;
     }
 }
