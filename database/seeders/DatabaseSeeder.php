@@ -28,6 +28,12 @@ class DatabaseSeeder extends Seeder
             "password"=> bcrypt("admin"),
         ]);
 
+        User::create([
+            "name"=> "admin2",
+            "email"=> "admin2@gmail.com",
+            "password"=> bcrypt("admin"),
+        ]);
+
         $this->call(TaskSeeder::class);
 
     }

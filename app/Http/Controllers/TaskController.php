@@ -50,7 +50,7 @@ class TaskController extends Controller
         $request['status'] = false;
         $user->tasks()->create($request->all());
 
-        return redirect()->route("task.index")->with("success", true);
+        return redirect()->route("task.index")->with("success", "Tarefa " . $request['title'] . " criada com Sucesso!");
     }
 
     /**
@@ -58,7 +58,15 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $auth = Auth::user();
+        $user = $this->user->find($auth->id);
+        $task = $user->tasks()->find($id);
+        if($task == null) {
+            return redirect()->route("task.index")->with("error","Tarefa não encontrada!");
+        }
+        $task = new TaskResource($task);
+        // dd($task);
+        return Inertia::render("Task/Show", ['task' => $task]);
     }
 
     /**

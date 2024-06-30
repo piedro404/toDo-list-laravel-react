@@ -1,17 +1,16 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 
-export default function Index({ auth, tasks, flash }) {
+export default function Show({ auth, task }) {
     console.log(auth);
-    console.log(tasks);
-    console.log(flash);
+    console.log(task);
 
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={
                 <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    ToDo List
+                    ToDo List - Detalhes da Tarefa {task['data'].title}
                 </h2>
             }
         >
@@ -20,15 +19,12 @@ export default function Index({ auth, tasks, flash }) {
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">Tarefas</div>
-
-                        {tasks["data"].map((task) => (
-                            <div key={task.id}>
-                                <p>{task.title}</p>
-                                <p>{task.description}</p>
-                                <p>{task.term}</p>
-                            </div>
-                        ))}
+                        <div className="p-6 text-gray-900">Tarefa</div>
+                        <div key={task['data'].id}>
+                            <p>{task['data'].title}</p>
+                            <p>{task['data'].description}</p>
+                            <p>{task['data'].term}</p>
+                        </div>
                     </div>
                 </div>
             </div>
